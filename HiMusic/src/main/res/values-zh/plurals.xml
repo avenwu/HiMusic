@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="nalbums">
+        <item quantity="one">1张专辑</item>
+        <item quantity="other">%d张专辑</item>
+    </plurals>
+</resources>

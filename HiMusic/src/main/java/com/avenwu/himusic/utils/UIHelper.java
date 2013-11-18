@@ -1,4 +1,4 @@
-package com.avenwu.himusic;
+package com.avenwu.himusic.utils;
 
 import android.content.Context;
 import android.widget.Toast;
