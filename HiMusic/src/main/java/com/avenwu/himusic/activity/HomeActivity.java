@@ -1,4 +1,4 @@
-package com.avenwu.himusic;
+package com.avenwu.himusic.activity;
 
 import java.util.Locale;
 
@@ -10,13 +10,16 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.avenwu.himusic.R;
+import com.avenwu.himusic.fragment.ArtistFagment;
+import com.avenwu.himusic.utils.UIHelper;
 
 public class HomeActivity extends ActionBarActivity implements ActionBar.TabListener {
 
@@ -34,12 +37,10 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_layout);
-
         // Set up the action bar.
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -133,7 +134,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            return position==0?new ArtistFagment():PlaceholderFragment.newInstance(position + 1);
         }
 
         @Override
@@ -147,7 +148,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
+                    return getString(R.string.title_artist).toUpperCase(l);
                 case 1:
                     return getString(R.string.title_section2).toUpperCase(l);
                 case 2:

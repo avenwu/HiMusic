@@ -1,4 +1,4 @@
-package com.avenwu.himusic;
+package com.avenwu.himusic.activity;
 
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -9,6 +9,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.avenwu.himusic.R;
 
 public class SearchableActivity extends ActionBarActivity {
 
