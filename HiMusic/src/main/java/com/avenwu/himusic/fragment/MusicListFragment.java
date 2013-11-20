@@ -13,7 +13,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,14 +29,14 @@ import com.avenwu.himusic.utils.Logger;
  * @author chaobin
  * @date 11/17/13.
  */
-public class ArtistFagment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    private ArtistAdapter mAdapter;
+public class MusicListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    private MusicAdapter mAdapter;
     private final int LOAD_SONGS = 0;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mAdapter = new ArtistAdapter(getActivity());
+        mAdapter = new MusicAdapter(getActivity());
         setListAdapter(mAdapter);
         getLoaderManager().initLoader(LOAD_SONGS, null, this);
     }
@@ -50,11 +49,11 @@ public class ArtistFagment extends ListFragment implements LoaderManager.LoaderC
             case LOAD_SONGS:
                 String[] projection = {
                         BaseColumns._ID,
-                        MediaStore.Audio.ArtistColumns.ARTIST,
-                        MediaStore.Audio.ArtistColumns.NUMBER_OF_ALBUMS
+                        MediaStore.Audio.Media.ARTIST,
+                        MediaStore.Audio.Media.TITLE,
                 };
-                Uri uri = MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI;
-                String sortOrder = MediaStore.Audio.Artists.DEFAULT_SORT_ORDER;
+                Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                String sortOrder = MediaStore.Audio.Media.DEFAULT_SORT_ORDER;
                 loader = new CursorLoader(getActivity(), uri, projection, null, null, sortOrder);
                 break;
         }
@@ -86,11 +85,11 @@ public class ArtistFagment extends ListFragment implements LoaderManager.LoaderC
         super.onDestroy();
     }
 
-    private static class ArtistAdapter extends SimpleCursorAdapter {
+    private static class MusicAdapter extends SimpleCursorAdapter {
         private LayoutInflater mInflator;
         private Bitmap mDefaultBitmap;
 
-        public ArtistAdapter(Context context) {
+        public MusicAdapter(Context context) {
             super(context, R.layout.list_song_item, null, new String[]{}, new int[]{}, 0);
             mInflator = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             mDefaultBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.default_widget_album);
@@ -102,7 +101,7 @@ public class ArtistFagment extends ListFragment implements LoaderManager.LoaderC
             ViewHolder holder = new ViewHolder();
             holder.photoView = (ImageView) view.findViewById(R.id.iv_photo);
             holder.title = (TextView) view.findViewById(R.id.tv_title);
-            holder.albums = (TextView) view.findViewById(R.id.tv_albums_count);
+            holder.artist = (TextView) view.findViewById(R.id.tv_artist);
             view.setTag(holder);
             return view;
         }
@@ -112,17 +111,16 @@ public class ArtistFagment extends ListFragment implements LoaderManager.LoaderC
             ViewHolder holder = (ViewHolder) view.getTag();
             Uri uri = UriProvider.getArtistAlbumUri(cursor);
             new ThumbnailFetchTask(holder.photoView).execute(uri);
-            holder.title.setText(CursorHelper.getString(cursor, MediaStore.Audio.ArtistColumns.ARTIST));
-            final int count = CursorHelper.getInt(cursor, MediaStore.Audio.ArtistColumns.NUMBER_OF_ALBUMS);
-            holder.albums.setText(context.getResources().getQuantityString(R.plurals.nalbums, count, count));
+            holder.artist.setText(CursorHelper.getString(cursor, MediaStore.Audio.Media.ARTIST));
+            holder.title.setText(CursorHelper.getString(cursor, MediaStore.Audio.Media.TITLE));
             holder.photoView.setImageBitmap(mDefaultBitmap);
-            Logger.d(ArtistAdapter.class.getSimpleName(), "bindView," + holder.title.getText());
+            Logger.d(MusicAdapter.class.getSimpleName(), "bindView," + holder.title.getText());
         }
 
         private static class ViewHolder {
             ImageView photoView;
             TextView title;
-            TextView albums;
+            TextView artist;
         }
     }
 }

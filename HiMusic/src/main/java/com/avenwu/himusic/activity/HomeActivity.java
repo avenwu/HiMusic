@@ -18,7 +18,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.avenwu.himusic.R;
-import com.avenwu.himusic.fragment.ArtistFagment;
+import com.avenwu.himusic.fragment.ArtistAlbumsFragment;
+import com.avenwu.himusic.fragment.MusicListFragment;
 import com.avenwu.himusic.utils.UIHelper;
 
 public class HomeActivity extends ActionBarActivity implements ActionBar.TabListener {
@@ -134,7 +135,14 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return position==0?new ArtistFagment():PlaceholderFragment.newInstance(position + 1);
+            switch (position){
+                case 0:
+                    return new ArtistAlbumsFragment();
+                case 1:
+                    return new MusicListFragment();
+                default:
+                    return PlaceholderFragment.newInstance(position+1);
+            }
         }
 
         @Override
@@ -150,7 +158,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
                 case 0:
                     return getString(R.string.title_artist).toUpperCase(l);
                 case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
+                    return getString(R.string.title_music).toUpperCase(l);
                 case 2:
                     return getString(R.string.title_section3).toUpperCase(l);
             }

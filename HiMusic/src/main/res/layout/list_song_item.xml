@@ -26,7 +26,7 @@
                 style="@style/ArtistItemTitile"/>
 
         <TextView
-                android:id="@+id/tv_albums_count"
+                android:id="@+id/tv_artist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
