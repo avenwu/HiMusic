@@ -3,7 +3,7 @@
 
     <string name="app_name">HiMusic</string>
     <string name="title_artist">艺术家</string>
-    <string name="title_section2">Section 2</string>
+    <string name="title_music">歌曲</string>
     <string name="title_section3">Section 3</string>
     <string name="action_settings">设置</string>
     <string name="action_refresh">刷新</string>
