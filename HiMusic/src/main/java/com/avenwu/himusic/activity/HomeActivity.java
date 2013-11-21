@@ -1,9 +1,10 @@
 package com.avenwu.himusic.activity;
 
+import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
@@ -14,13 +15,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.avenwu.himusic.R;
 import com.avenwu.himusic.fragment.ArtistAlbumsFragment;
 import com.avenwu.himusic.fragment.MusicListFragment;
 import com.avenwu.himusic.utils.UIHelper;
-import com.avenwu.himusic.widget.DepthPageTransformer;
+import com.avenwu.himusic.widget.ZoomOutPageTransformer;
 
 import java.util.Locale;
 
@@ -28,6 +28,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
+    private final int SETTING_REQUEST_CODE = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +36,8 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         setContentView(R.layout.home_layout);
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.setDisplayUseLogoEnabled(true);
+        actionBar.setLogo(R.drawable.default_widget_album);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -44,7 +47,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
                 actionBar.setSelectedNavigationItem(position);
             }
         });
-        mViewPager.setPageTransformer(true, new DepthPageTransformer());
+        mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
         for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
             actionBar.addTab(
                     actionBar.newTab()
@@ -71,9 +74,20 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
                 break;
             case R.id.action_settings:
                 UIHelper.toast(HomeActivity.this, "Setting");
+                startActivityForResult(new Intent(this, SettingsActivity.class), SETTING_REQUEST_CODE);
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case SETTING_REQUEST_CODE:
+                UIHelper.toast(this, "Setting success changed");
+                break;
+        }
     }
 
     @Override
@@ -97,13 +111,13 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 
         @Override
         public Fragment getItem(int position) {
-            switch (position){
+            switch (position) {
                 case 0:
                     return new ArtistAlbumsFragment();
                 case 1:
                     return new MusicListFragment();
                 default:
-                    return PlaceholderFragment.newInstance(position+1);
+                    return PlaceholderFragment.newInstance(position + 1);
             }
         }
 
@@ -145,9 +159,8 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_home, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
+            View rootView = inflater.inflate(R.layout.fragment_searchable, container, false);
+            rootView.setBackgroundResource(android.R.drawable.sym_def_app_icon);
             return rootView;
         }
     }

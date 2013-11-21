@@ -27,13 +27,11 @@
 
         <TextView
                 android:id="@+id/tv_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                style="@style/BoldArtistAlbumText"/>
 
         <TextView
                 android:id="@+id/tv_albums_count"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                style="@style/ArtistAlbumText"/>
 
     </LinearLayout>
 </RelativeLayout>

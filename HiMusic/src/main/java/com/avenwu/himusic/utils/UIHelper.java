@@ -1,6 +1,8 @@
 package com.avenwu.himusic.utils;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.widget.Toast;
 
 /**
@@ -15,4 +17,5 @@ public class UIHelper {
     public static void toast(Context context, CharSequence content) {
         Toast.makeText(context, content, Toast.LENGTH_SHORT).show();
     }
+
 }

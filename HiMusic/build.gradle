@@ -23,10 +23,9 @@ android {
     }
 }
 dependencies {
-    compile 'com.android.support:support-v4:19.0.0'
-    compile 'com.android.support:gridlayout-v7:19.0.0'
-    compile 'com.android.support:appcompat-v7:19.0.0'
-    compile 'com.nineoldandroids:library:2.4.0'
-    compile files('libs/volley.jar')
+	compile 'com.android.support:support-v4:19.0.0'
+	compile 'com.android.support:gridlayout-v7:19.0.0'
+	compile 'com.android.support:appcompat-v7:19.0.0'
+	compile 'com.nineoldandroids:library:2.4.0'
 }
 
