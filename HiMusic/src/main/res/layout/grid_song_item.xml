@@ -19,21 +19,19 @@
             android:layout_width="fill_parent"
             android:layout_height="@dimen/song_info_height"
             android:background="@color/transparent_black"
-            android:paddingLeft="@dimen/gridview_item_ccontainer_padding_left"
-            android:paddingRight="@dimen/gridview_item_ccontainer_padding_right"
+            android:paddingLeft="@dimen/list_item_padding"
+            android:paddingRight="@dimen/list_item_padding"
             android:gravity="center_vertical"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true">
 
         <TextView
                 android:id="@+id/tv_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                style="@style/BoldArtistAlbumText"/>
 
         <TextView
                 android:id="@+id/tv_albums_count"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                style="@style/ArtistAlbumText"/>
 
     </LinearLayout>
 </RelativeLayout>

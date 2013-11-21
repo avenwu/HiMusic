@@ -17,18 +17,18 @@
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
+            android:layout_marginLeft="@dimen/list_item_padding"
             android:layout_toRightOf="@id/iv_photo"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true">
 
         <TextView
                 android:id="@+id/tv_title"
-                style="@style/ArtistItemTitile"/>
+                style="@style/MusicItemTitile"/>
 
         <TextView
                 android:id="@+id/tv_artist"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                style="@style/MusicItemArtist"/>
 
     </LinearLayout>
 </RelativeLayout>

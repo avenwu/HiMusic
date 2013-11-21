@@ -2,6 +2,7 @@ package com.avenwu.himusic.fragment;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -54,7 +55,10 @@ public class MusicListFragment extends ListFragment implements LoaderManager.Loa
                 };
                 Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
                 String sortOrder = MediaStore.Audio.Media.DEFAULT_SORT_ORDER;
-                loader = new CursorLoader(getActivity(), uri, projection, null, null, sortOrder);
+                StringBuilder queryBuilder = new StringBuilder();
+                queryBuilder.append(MediaStore.Audio.Media.IS_MUSIC + ">0");
+                loader = new CursorLoader(getActivity(), uri, projection, queryBuilder.toString(), null, sortOrder);
+
                 break;
         }
         return loader;
@@ -113,6 +117,8 @@ public class MusicListFragment extends ListFragment implements LoaderManager.Loa
             new ThumbnailFetchTask(holder.photoView).execute(uri);
             holder.artist.setText(CursorHelper.getString(cursor, MediaStore.Audio.Media.ARTIST));
             holder.title.setText(CursorHelper.getString(cursor, MediaStore.Audio.Media.TITLE));
+            holder.artist.setSelected(true);
+            holder.title.setSelected(true);
             holder.photoView.setImageBitmap(mDefaultBitmap);
             Logger.d(MusicAdapter.class.getSimpleName(), "bindView," + holder.title.getText());
         }
