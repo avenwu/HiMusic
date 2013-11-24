@@ -1,6 +1,9 @@
 package com.avenwu.himusic.utils;
 
 import android.database.Cursor;
+import android.provider.MediaStore;
+
+import com.avenwu.himusic.modle.SongDetail;
 
 /**
  * @author chaobin
@@ -21,5 +24,12 @@ public class CursorHelper {
 
     }
 
-
+    public static SongDetail getSongDetail(Cursor cursor) {
+        SongDetail item = new SongDetail();
+        item.artist = CursorHelper.getString(cursor, MediaStore.Audio.Media.ARTIST);
+        item.title = CursorHelper.getString(cursor, MediaStore.Audio.Media.TITLE);
+        item.size = CursorHelper.getLong(cursor, MediaStore.Audio.Media.SIZE);
+        item.duration = CursorHelper.getLong(cursor, MediaStore.Audio.Media.DURATION);
+        return item;
+    }
 }
