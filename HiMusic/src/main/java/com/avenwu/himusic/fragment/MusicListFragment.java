@@ -2,12 +2,10 @@ package com.avenwu.himusic.fragment;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -17,14 +15,18 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.avenwu.himusic.R;
+import com.avenwu.himusic.manager.SQLProvider;
 import com.avenwu.himusic.manager.UriProvider;
+import com.avenwu.himusic.modle.SongDetail;
 import com.avenwu.himusic.task.ThumbnailFetchTask;
 import com.avenwu.himusic.utils.CursorHelper;
 import com.avenwu.himusic.utils.Logger;
+import com.avenwu.himusic.utils.UIHelper;
 
 /**
  * @author chaobin
@@ -40,6 +42,13 @@ public class MusicListFragment extends ListFragment implements LoaderManager.Loa
         mAdapter = new MusicAdapter(getActivity());
         setListAdapter(mAdapter);
         getLoaderManager().initLoader(LOAD_SONGS, null, this);
+        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                SongDetail item = CursorHelper.getSongDetail((Cursor) parent.getAdapter().getItem(position));
+                UIHelper.toast(view.getContext(), item.toString());
+            }
+        });
     }
 
 
@@ -48,17 +57,11 @@ public class MusicListFragment extends ListFragment implements LoaderManager.Loa
         CursorLoader loader = null;
         switch (id) {
             case LOAD_SONGS:
-                String[] projection = {
-                        BaseColumns._ID,
-                        MediaStore.Audio.Media.ARTIST,
-                        MediaStore.Audio.Media.TITLE,
-                };
+                String[] projection = SQLProvider.getMusicProjection();
                 Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
                 String sortOrder = MediaStore.Audio.Media.DEFAULT_SORT_ORDER;
-                StringBuilder queryBuilder = new StringBuilder();
-                queryBuilder.append(MediaStore.Audio.Media.IS_MUSIC + ">0");
-                loader = new CursorLoader(getActivity(), uri, projection, queryBuilder.toString(), null, sortOrder);
-
+                String selection = MediaStore.Audio.Media.IS_MUSIC + ">0";
+                loader = new CursorLoader(getActivity(), uri, projection, selection, null, sortOrder);
                 break;
         }
         return loader;
@@ -115,12 +118,13 @@ public class MusicListFragment extends ListFragment implements LoaderManager.Loa
             ViewHolder holder = (ViewHolder) view.getTag();
             Uri uri = UriProvider.getArtistAlbumUri(cursor);
             new ThumbnailFetchTask(holder.photoView).execute(uri);
-            holder.artist.setText(CursorHelper.getString(cursor, MediaStore.Audio.Media.ARTIST));
-            holder.title.setText(CursorHelper.getString(cursor, MediaStore.Audio.Media.TITLE));
+            SongDetail item = CursorHelper.getSongDetail(cursor);
+            holder.artist.setText(item.artist);
+            holder.title.setText(item.title);
             holder.artist.setSelected(true);
             holder.title.setSelected(true);
             holder.photoView.setImageBitmap(mDefaultBitmap);
-            Logger.d(MusicAdapter.class.getSimpleName(), "bindView," + holder.title.getText());
+            Logger.d(MusicAdapter.class.getSimpleName(), "bindView," + item.title);
         }
 
         private static class ViewHolder {

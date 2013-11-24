@@ -1,8 +1,10 @@
 package com.avenwu.himusic.activity;
 
+import android.content.ComponentName;
 import android.content.Intent;
-import android.content.res.Resources;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -19,13 +21,16 @@ import android.view.ViewGroup;
 import com.avenwu.himusic.R;
 import com.avenwu.himusic.fragment.ArtistAlbumsFragment;
 import com.avenwu.himusic.fragment.MusicListFragment;
+import com.avenwu.himusic.service.PlayService;
+import com.avenwu.himusic.utils.Logger;
 import com.avenwu.himusic.utils.UIHelper;
 import com.avenwu.himusic.widget.ZoomOutPageTransformer;
 
 import java.util.Locale;
 
-public class HomeActivity extends ActionBarActivity implements ActionBar.TabListener {
-
+public class HomeActivity extends ActionBarActivity implements ActionBar.TabListener, ServiceConnection {
+    private final String TAG = HomeActivity.class.getSimpleName();
+    private PlayService mPlayService;
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
     private final int SETTING_REQUEST_CODE = 0;
@@ -54,6 +59,14 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, PlayService.class);
+        bindService(intent, this, BIND_AUTO_CREATE);
+        Logger.d(TAG, "bind service");
     }
 
     @Override
@@ -101,6 +114,24 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        mPlayService = ((PlayService.PlayBinder) service).getService();
+        Logger.d(TAG, name.getClassName() + " connected");
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        Logger.d(TAG, name.getClassName() + " disconnected");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(this);
+        Logger.d(TAG, "unbind service");
     }
 
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
