@@ -26,10 +26,10 @@ public class FormatterHelper {
     }
 
     public static String getReadleDuration(long duration) {
-        if(duration<1000)
-        int seconds = (int) (duration / 1000) % 60 ;
-        int minutes = (int) ((duration / (1000*60)) % 60);
-        int hours   = (int) ((duration / (1000*60*60)) % 24);
-
+//        if(duration<1000)
+//        int seconds = (int) (duration / 1000) % 60 ;
+//        int minutes = (int) ((duration / (1000*60)) % 60);
+//        int hours   = (int) ((duration / (1000*60*60)) % 24);
+        return duration+"";
     }
 }

@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.avenwu.himusic.R;
+import com.avenwu.himusic.manager.ReceiverHelper;
 import com.avenwu.himusic.manager.SQLProvider;
 import com.avenwu.himusic.manager.UriProvider;
 import com.avenwu.himusic.modle.SongDetail;
@@ -33,6 +34,7 @@ import com.avenwu.himusic.utils.UIHelper;
  * @date 11/17/13.
  */
 public class MusicListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    private final String TAG = MusicListFragment.class.getSimpleName();
     private MusicAdapter mAdapter;
     private final int LOAD_SONGS = 0;
 
@@ -46,7 +48,8 @@ public class MusicListFragment extends ListFragment implements LoaderManager.Loa
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 SongDetail item = CursorHelper.getSongDetail((Cursor) parent.getAdapter().getItem(position));
-                UIHelper.toast(view.getContext(), item.toString());
+                Logger.d(TAG, item.toString());
+                ReceiverHelper.notifyPlay(getActivity(), item);
             }
         });
     }
