@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -36,7 +37,7 @@ public class PlayFooterFragment extends Fragment {
     private PlayReceiver mPlayReceiver;
     private AudioManager mAudioManager;
     private MediaPlayer mMediaPlayer;
-    private boolean AUDIO_FOCUS_ABLE = false;// Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO;
+    private boolean AUDIO_FOCUS_ABLE = Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO;
     private Uri mMusicUri;
 
     @Override
