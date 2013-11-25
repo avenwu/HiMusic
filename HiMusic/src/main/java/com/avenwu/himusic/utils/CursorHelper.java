@@ -26,6 +26,7 @@ public class CursorHelper {
 
     public static SongDetail getSongDetail(Cursor cursor) {
         SongDetail item = new SongDetail();
+        item.id = CursorHelper.getLong(cursor, MediaStore.Audio.Media._ID);
         item.artist = CursorHelper.getString(cursor, MediaStore.Audio.Media.ARTIST);
         item.title = CursorHelper.getString(cursor, MediaStore.Audio.Media.TITLE);
         item.size = CursorHelper.getLong(cursor, MediaStore.Audio.Media.SIZE);

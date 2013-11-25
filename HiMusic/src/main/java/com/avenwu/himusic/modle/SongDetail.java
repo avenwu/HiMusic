@@ -7,6 +7,7 @@ import com.avenwu.himusic.utils.FormatterHelper;
  * @date 11/22/13.
  */
 public class SongDetail {
+    public long id;
     public String title;
     public String artist;
     public long size;
@@ -16,6 +17,7 @@ public class SongDetail {
     public String toString() {
         return new StringBuilder()
                 .append(super.toString())
+                .append("\nid:").append(id)
                 .append("\ntitle:").append(title)
                 .append("\nartist:").append(artist)
                 .append("\nsize:").append(FormatterHelper.getReadableSize(size))
