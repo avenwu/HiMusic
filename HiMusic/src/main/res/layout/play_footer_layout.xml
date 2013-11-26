@@ -11,14 +11,22 @@
         android:id="@+id/iv_artist_photo"
         android:src="@drawable/default_widget_album"/>
 
-    <Button
+    <ImageView
         style="@style/PlayFooterButton"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/footer_btn_next"
         android:id="@+id/btn_next" />
-    <Button
+    <ImageView
         style="@style/PlayFooterButton"
         android:layout_toLeftOf="@id/btn_next"
+        android:src="@drawable/footer_play_selector"
         android:id="@+id/btn_play_pause" />
+    <ImageView
+            style="@style/PlayFooterButton"
+            android:layout_toLeftOf="@id/btn_play_pause"
+            android:src="@drawable/footer_btn_pre"
+            android:id="@+id/btn_play_pre" />
     <TextView
         style="@style/PlayfooterText"
         android:id="@+id/tv_song_title"

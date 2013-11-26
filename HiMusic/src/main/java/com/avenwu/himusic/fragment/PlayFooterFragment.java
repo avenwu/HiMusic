@@ -30,8 +30,9 @@ import java.io.IOException;
  */
 public class PlayFooterFragment extends Fragment {
     private ImageView mArtistPhoto;
-    private Button mPlayPause;
-    private Button mNext;
+    private View mPlayPause;
+    private View mNext;
+    private View mPre;
     private TextView mArtistName;
     private TextView mSongTile;
     private PlayReceiver mPlayReceiver;
@@ -44,8 +45,10 @@ public class PlayFooterFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.play_footer_layout, null);
         mArtistPhoto = (ImageView) view.findViewById(R.id.iv_artist_photo);
-        mPlayPause = (Button) view.findViewById(R.id.btn_play_pause);
-        mNext = (Button) view.findViewById(R.id.btn_next);
+        mPlayPause = view.findViewById(R.id.btn_play_pause);
+        mPlayPause.setSelected(false);
+        mNext = view.findViewById(R.id.btn_next);
+        mPre = view.findViewById(R.id.btn_play_pre);
         mArtistName = (TextView) view.findViewById(R.id.tv_artist_name);
         mSongTile = (TextView) view.findViewById(R.id.tv_song_title);
         return view;
@@ -80,6 +83,7 @@ public class PlayFooterFragment extends Fragment {
                                         pausePlayback();
                                     } else {
                                         play();
+                                        mPlayPause.setPressed(true);
                                     }
                                     break;
                                 case AudioManager.AUDIOFOCUS_LOSS:
@@ -99,6 +103,12 @@ public class PlayFooterFragment extends Fragment {
                 UIHelper.toast(getActivity(), "next clicked");
             }
         });
+        mPre.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UIHelper.toast(getActivity(), "pre clicked");
+            }
+        });
     }
 
     private void pausePlayback() {
@@ -108,7 +118,7 @@ public class PlayFooterFragment extends Fragment {
     }
 
     private void stopPlayback() {
-        if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
+        if (mMediaPlayer != null) {
             mMediaPlayer.stop();
             mMediaPlayer.release();
             mMediaPlayer = null;
@@ -116,22 +126,8 @@ public class PlayFooterFragment extends Fragment {
     }
 
     private void reset() {
-        try {
-            if (mMediaPlayer != null) {
-                mMediaPlayer.release();
-                mMediaPlayer = null;
-            }
-            initMediaPlayer();
-            mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mMediaPlayer.start();
-                }
-            });
-            mMediaPlayer.prepareAsync();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        stopPlayback();
+        play();
     }
 
     private void play() {
