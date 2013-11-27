@@ -5,10 +5,6 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -20,10 +16,9 @@ import android.widget.TextView;
 
 import com.avenwu.himusic.R;
 import com.avenwu.himusic.manager.ReceiverHelper;
+import com.avenwu.himusic.service.PlayService;
 import com.avenwu.himusic.utils.UIHelper;
 import com.avenwu.himusic.widget.PlayPauseButton;
-
-import java.io.IOException;
 
 /**
  * Created by Aven on 13-11-24.
@@ -36,17 +31,13 @@ public class PlayFooterFragment extends Fragment {
     private TextView mArtistName;
     private TextView mSongTile;
     private PlayReceiver mPlayReceiver;
-    private AudioManager mAudioManager;
-    private MediaPlayer mMediaPlayer;
-    private boolean AUDIO_FOCUS_ABLE = Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO;
-    private Uri mMusicUri;
+    private PlayService mPlayService;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.play_footer_layout, null);
         mArtistPhoto = (ImageView) view.findViewById(R.id.iv_artist_photo);
-        mPlayPause = (PlayPauseButton)view.findViewById(R.id.btn_play_pause);
-        mPlayPause.setSelected(false);
+        mPlayPause = (PlayPauseButton) view.findViewById(R.id.btn_play_pause);
         mNext = view.findViewById(R.id.btn_next);
         mPre = view.findViewById(R.id.btn_play_pre);
         mArtistName = (TextView) view.findViewById(R.id.tv_artist_name);
@@ -57,9 +48,10 @@ public class PlayFooterFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mArtistName.setSelected(true);
+        mSongTile.setSelected(true);
         mPlayReceiver = new PlayReceiver();
-        mAudioManager = AUDIO_FOCUS_ABLE ?
-                (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE) : null;
+
         mArtistPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,94 +61,33 @@ public class PlayFooterFragment extends Fragment {
         mPlayPause.setOnPlayPauseListener(new PlayPauseButton.OnPlayPauseListener() {
             @Override
             public void onPlay() {
-                UIHelper.toast(getActivity(), "play");
-                /*if (AUDIO_FOCUS_ABLE) {
-                    mAudioManager.requestAudioFocus(new AudioManager.OnAudioFocusChangeListener() {
-                        @Override
-                        public void onAudioFocusChange(int focusChange) {
-                            switch (focusChange) {
-                                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                                    pausePlayback();
-                                    break;
-                                case AudioManager.AUDIOFOCUS_GAIN:
-                                    if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
-                                        pausePlayback();
-                                    } else {
-                                        play();
-                                        mPlayPause.setPressed(true);
-                                    }
-                                    break;
-                                case AudioManager.AUDIOFOCUS_LOSS:
-                                    stopPlayback();
-                                    break;
-                            }
-                        }
-                    }, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-                } else {
-                    play();
-                }*/
+                mPlayService.play();
             }
 
             @Override
             public void onPause() {
-                UIHelper.toast(getActivity(), "pause");
+                mPlayService.pause();
             }
         });
 
         mNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UIHelper.toast(getActivity(), "next clicked");
+                mPlayService.next();
             }
         });
         mPre.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UIHelper.toast(getActivity(), "pre clicked");
+                mPlayService.pre();
             }
         });
     }
 
-    private void pausePlayback() {
-        if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
-            mMediaPlayer.pause();
-        }
-    }
-
-    private void stopPlayback() {
-        if (mMediaPlayer != null) {
-            mMediaPlayer.stop();
-            mMediaPlayer.release();
-            mMediaPlayer = null;
-        }
-    }
-
     private void reset() {
-        stopPlayback();
-        play();
-    }
-
-    private void play() {
-        try {
-            if (mMediaPlayer == null) initMediaPlayer();
-            if (!mMediaPlayer.isPlaying()) {
-                mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        mMediaPlayer.start();
-                    }
-                });
-                mMediaPlayer.prepareAsync();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void initMediaPlayer() throws IOException {
-        mMediaPlayer = new MediaPlayer();
-        mMediaPlayer.setDataSource(getActivity(), mMusicUri);
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mPlayService.stop();
+        mPlayPause.play();
+        mPlayPause.setChecked(true);
     }
 
     @Override
@@ -183,10 +114,14 @@ public class PlayFooterFragment extends Fragment {
             mArtistName.setText(intent.getStringExtra("artist"));
             mSongTile.setText(intent.getStringExtra("title"));
             long id = intent.getLongExtra("id", 0);
-            if (id != 0) {
-                mMusicUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
+            if (id != 0 && mPlayService != null) {
+                mPlayService.updateUri(ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id));
                 reset();
             }
         }
+    }
+
+    public void bindService(PlayService service) {
+        mPlayService = service;
     }
 }

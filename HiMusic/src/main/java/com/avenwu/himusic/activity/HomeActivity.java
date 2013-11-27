@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import com.avenwu.himusic.R;
 import com.avenwu.himusic.fragment.ArtistAlbumsFragment;
 import com.avenwu.himusic.fragment.MusicListFragment;
+import com.avenwu.himusic.fragment.PlayFooterFragment;
 import com.avenwu.himusic.service.PlayService;
 import com.avenwu.himusic.utils.Logger;
 import com.avenwu.himusic.utils.UIHelper;
@@ -31,6 +32,7 @@ import java.util.Locale;
 public class HomeActivity extends ActionBarActivity implements ActionBar.TabListener, ServiceConnection {
     private final String TAG = HomeActivity.class.getSimpleName();
     private PlayService mPlayService;
+    private PlayFooterFragment mFooter;
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
     private final int SETTING_REQUEST_CODE = 0;
@@ -43,6 +45,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setDisplayUseLogoEnabled(true);
         actionBar.setLogo(R.drawable.default_widget_album);
+        mFooter = (PlayFooterFragment) getSupportFragmentManager().findFragmentById(R.id.footer);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -119,6 +122,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         mPlayService = ((PlayService.PlayBinder) service).getService();
+        mFooter.bindService(mPlayService);
         Logger.d(TAG, name.getClassName() + " connected");
     }
 

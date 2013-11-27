@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ToggleButton;
 
 import com.avenwu.himusic.R;
 
@@ -40,19 +42,27 @@ public class PlayPauseButton extends CompoundButton {
         a.recycle();
     }
 
-    @Override
-    public void toggle() {
-        super.toggle();
-        if (isChecked()) {
-            if (mPlayPauseListener != null) mPlayPauseListener.onPlay();
-            setButtonDrawable(mDrawableOff);
-        } else {
-            if (mPlayPauseListener != null) mPlayPauseListener.onPause();
-            setButtonDrawable(mDrawableOn);
-        }
-    }
-
     public void setOnPlayPauseListener(OnPlayPauseListener listener) {
         mPlayPauseListener = listener;
+        setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isChecked()) {
+                    play();
+                } else {
+                    pause();
+                }
+            }
+        });
+    }
+
+    public void play() {
+        mPlayPauseListener.onPlay();
+        setButtonDrawable(mDrawableOn);
+    }
+
+    public void pause() {
+        mPlayPauseListener.onPause();
+        setButtonDrawable(mDrawableOff);
     }
 }
