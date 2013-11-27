@@ -1,5 +1,6 @@
 package com.avenwu.himusic.service;
 
+import android.annotation.TargetApi;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import com.avenwu.himusic.utils.Logger;
  * @author chaobin
  * @date 11/22/13.
  */
+@TargetApi(Build.VERSION_CODES.FROYO)
 public class PlayService extends Service {
     private final String TAG = PlayService.class.getSimpleName();
     private PlayBinder mBinder = new PlayBinder();
@@ -24,6 +26,19 @@ public class PlayService extends Service {
     private MediaPlayer mMediaPlayer;
     private Uri mMusicUri;
     private boolean AUDIO_FOCUS_ABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO;
+    private AudioManager.OnAudioFocusChangeListener mFocusChangedListener = AUDIO_FOCUS_ABLE ?
+            new AudioManager.OnAudioFocusChangeListener() {
+                public void onAudioFocusChange(int focusChange) {
+                    if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+                        pause();
+                    } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+                        start();
+                    } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+                        stop();
+                        mAudioManager.abandonAudioFocus(mFocusChangedListener);
+                    }
+                }
+            } : null;
 
     public class PlayBinder extends Binder {
         public PlayService getService() {
@@ -47,6 +62,19 @@ public class PlayService extends Service {
 
     public void play() {
         Logger.d(TAG, "start play");
+        if (AUDIO_FOCUS_ABLE) {
+            int result = mAudioManager.requestAudioFocus(mFocusChangedListener, AudioManager.STREAM_MUSIC,
+                    AudioManager.AUDIOFOCUS_GAIN);
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                start();
+            }
+        } else {
+            start();
+        }
+        mPlayingState = PlayState.PLAYING;
+    }
+
+    private void start() {
         try {
             if (mMediaPlayer == null) {
                 initMediaPlayer();
@@ -63,7 +91,6 @@ public class PlayService extends Service {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        mPlayingState = PlayState.PLAYING;
     }
 
     private void initMediaPlayer() throws Exception {

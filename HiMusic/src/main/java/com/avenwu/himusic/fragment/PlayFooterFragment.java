@@ -109,8 +109,6 @@ public class PlayFooterFragment extends Fragment {
     public class PlayReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String from = intent.getStringExtra("from");
-            UIHelper.toast(context, "play intent received," + from);
             mArtistName.setText(intent.getStringExtra("artist"));
             mSongTile.setText(intent.getStringExtra("title"));
             long id = intent.getLongExtra("id", 0);
