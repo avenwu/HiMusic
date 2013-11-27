@@ -15,13 +15,13 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.avenwu.himusic.R;
 import com.avenwu.himusic.manager.ReceiverHelper;
 import com.avenwu.himusic.utils.UIHelper;
+import com.avenwu.himusic.widget.PlayPauseButton;
 
 import java.io.IOException;
 
@@ -30,7 +30,7 @@ import java.io.IOException;
  */
 public class PlayFooterFragment extends Fragment {
     private ImageView mArtistPhoto;
-    private View mPlayPause;
+    private PlayPauseButton mPlayPause;
     private View mNext;
     private View mPre;
     private TextView mArtistName;
@@ -45,7 +45,7 @@ public class PlayFooterFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.play_footer_layout, null);
         mArtistPhoto = (ImageView) view.findViewById(R.id.iv_artist_photo);
-        mPlayPause = view.findViewById(R.id.btn_play_pause);
+        mPlayPause = (PlayPauseButton)view.findViewById(R.id.btn_play_pause);
         mPlayPause.setSelected(false);
         mNext = view.findViewById(R.id.btn_next);
         mPre = view.findViewById(R.id.btn_play_pre);
@@ -66,11 +66,11 @@ public class PlayFooterFragment extends Fragment {
                 UIHelper.toast(getActivity(), "click photo");
             }
         });
-        mPlayPause.setOnClickListener(new View.OnClickListener() {
+        mPlayPause.setOnPlayPauseListener(new PlayPauseButton.OnPlayPauseListener() {
             @Override
-            public void onClick(View v) {
-                UIHelper.toast(getActivity(), "play button clicked");
-                if (AUDIO_FOCUS_ABLE) {
+            public void onPlay() {
+                UIHelper.toast(getActivity(), "play");
+                /*if (AUDIO_FOCUS_ABLE) {
                     mAudioManager.requestAudioFocus(new AudioManager.OnAudioFocusChangeListener() {
                         @Override
                         public void onAudioFocusChange(int focusChange) {
@@ -94,9 +94,15 @@ public class PlayFooterFragment extends Fragment {
                     }, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
                 } else {
                     play();
-                }
+                }*/
+            }
+
+            @Override
+            public void onPause() {
+                UIHelper.toast(getActivity(), "pause");
             }
         });
+
         mNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

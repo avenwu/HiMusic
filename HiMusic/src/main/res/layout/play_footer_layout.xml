@@ -1,42 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-     android:layout_width="match_parent"
-    android:background="@drawable/ab_stacked_solid_yellowactionbar"
-     android:layout_height="@dimen/play_footer_height">
+                xmlns:custom="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:background="@drawable/ab_stacked_solid_yellowactionbar"
+                android:layout_height="@dimen/play_footer_height">
 
     <ImageView
-        android:layout_width="@dimen/play_footer_height"
-        android:layout_height="@dimen/play_footer_height"
-        android:id="@+id/iv_artist_photo"
-        android:src="@drawable/default_widget_album"/>
+            android:layout_width="@dimen/play_footer_height"
+            android:layout_height="@dimen/play_footer_height"
+            android:id="@+id/iv_artist_photo"
+            android:src="@drawable/default_widget_album"/>
 
     <ImageView
-        style="@style/PlayFooterButton"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="10dp"
-        android:src="@drawable/footer_btn_next"
-        android:id="@+id/btn_next" />
-    <ImageView
-        style="@style/PlayFooterButton"
-        android:layout_toLeftOf="@id/btn_next"
-        android:src="@drawable/footer_play_selector"
-        android:id="@+id/btn_play_pause" />
+            style="@style/PlayFooterButton"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/footer_btn_next"
+            android:id="@+id/btn_next"/>
+
+    <com.avenwu.himusic.widget.PlayPauseButton
+            style="@style/PlayFooterButton"
+            android:layout_toLeftOf="@id/btn_next"
+            android:src="@drawable/footer_play_selector"
+            custom:backgroundOn="@drawable/footer_btn_pause"
+            custom:backgroundOff="@drawable/footer_btn_play"
+            android:id="@+id/btn_play_pause"/>
+
     <ImageView
             style="@style/PlayFooterButton"
             android:layout_toLeftOf="@id/btn_play_pause"
             android:src="@drawable/footer_btn_pre"
-            android:id="@+id/btn_play_pre" />
-    <TextView
-        style="@style/PlayfooterText"
-        android:id="@+id/tv_song_title"
-        android:layout_marginTop="@dimen/play_footer_margin"
-        android:layout_alignParentTop="true" />
+            android:id="@+id/btn_play_pre"/>
 
     <TextView
-        style="@style/PlayfooterText"
-        android:id="@+id/tv_artist_name"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="@dimen/play_footer_margin" />
+            style="@style/PlayfooterText"
+            android:id="@+id/tv_song_title"
+            android:layout_marginTop="@dimen/play_footer_margin"
+            android:layout_alignParentTop="true"/>
+
+    <TextView
+            style="@style/PlayfooterText"
+            android:id="@+id/tv_artist_name"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/play_footer_margin"/>
 
 </RelativeLayout>

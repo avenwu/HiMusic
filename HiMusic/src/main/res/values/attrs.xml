@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PlayPauseButton">
+        <attr name="backgroundOn" format="reference"/>
+        <attr name="backgroundOff" format="reference"/>
+    </declare-styleable>
+</resources>
