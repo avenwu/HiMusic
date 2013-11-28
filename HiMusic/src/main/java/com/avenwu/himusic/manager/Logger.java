@@ -1,4 +1,4 @@
-package com.avenwu.himusic.utils;
+package com.avenwu.himusic.manager;
 
 import android.util.Log;
 

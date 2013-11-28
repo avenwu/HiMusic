@@ -5,8 +5,6 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
 
-import com.avenwu.himusic.utils.CursorHelper;
-
 /**
  * @author chaobin
  * @date 11/18/13.

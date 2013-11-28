@@ -23,8 +23,8 @@ import com.avenwu.himusic.fragment.ArtistAlbumsFragment;
 import com.avenwu.himusic.fragment.MusicListFragment;
 import com.avenwu.himusic.fragment.PlayFooterFragment;
 import com.avenwu.himusic.service.PlayService;
-import com.avenwu.himusic.utils.Logger;
-import com.avenwu.himusic.utils.UIHelper;
+import com.avenwu.himusic.manager.Logger;
+import com.avenwu.himusic.manager.UIHelper;
 import com.avenwu.himusic.widget.ZoomOutPageTransformer;
 
 import java.util.Locale;

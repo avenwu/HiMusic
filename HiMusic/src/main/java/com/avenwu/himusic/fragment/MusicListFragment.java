@@ -1,6 +1,9 @@
 package com.avenwu.himusic.fragment;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,12 +25,12 @@ import android.widget.TextView;
 import com.avenwu.himusic.R;
 import com.avenwu.himusic.manager.ReceiverHelper;
 import com.avenwu.himusic.manager.SQLProvider;
+import com.avenwu.himusic.manager.UIHelper;
 import com.avenwu.himusic.manager.UriProvider;
 import com.avenwu.himusic.modle.SongDetail;
 import com.avenwu.himusic.task.ThumbnailFetchTask;
-import com.avenwu.himusic.utils.CursorHelper;
-import com.avenwu.himusic.utils.Logger;
-import com.avenwu.himusic.utils.UIHelper;
+import com.avenwu.himusic.manager.CursorHelper;
+import com.avenwu.himusic.manager.Logger;
 
 /**
  * @author chaobin
@@ -37,6 +40,8 @@ public class MusicListFragment extends ListFragment implements LoaderManager.Loa
     private final String TAG = MusicListFragment.class.getSimpleName();
     private MusicAdapter mAdapter;
     private final int LOAD_SONGS = 0;
+    private PlayReceiver mPlayReceiver;
+    private int mCurrentPosition = -1;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -47,13 +52,29 @@ public class MusicListFragment extends ListFragment implements LoaderManager.Loa
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SongDetail item = CursorHelper.getSongDetail((Cursor) parent.getAdapter().getItem(position));
-                Logger.d(TAG, item.toString());
-                ReceiverHelper.notifyPlay(getActivity(), item);
+                mCurrentPosition = position;
+                Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
+                playItem(cursor);
             }
         });
     }
 
+    private void playItem(Cursor cursor) {
+        SongDetail item = CursorHelper.getSongDetail(cursor);
+        Logger.d(TAG, item.toString());
+        ReceiverHelper.notifyPlay(getActivity(), item);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ReceiverHelper.INTENT_PLAY_PRE);
+        filter.addAction(ReceiverHelper.INTENT_PLAY_NEXT);
+        filter.addAction(ReceiverHelper.INTENT_UPDATE_POSITION);
+        mPlayReceiver = new PlayReceiver();
+        getActivity().registerReceiver(mPlayReceiver, filter);
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
@@ -76,6 +97,19 @@ public class MusicListFragment extends ListFragment implements LoaderManager.Loa
         switch (cursorLoader.getId()) {
             case LOAD_SONGS:
                 mAdapter.changeCursor(cursor);
+                int position = cursor.getPosition();
+                long lastID = UIHelper.getCurrentId(getActivity());
+                Logger.d("TEST_CURSOR", position + "");
+                cursor.moveToFirst();
+                while (!cursor.isLast()) {
+                    if (lastID == CursorHelper.getLong(cursor, MediaStore.MediaColumns._ID)) {
+                        mCurrentPosition = cursor.getPosition();
+                        Logger.d("TEST_CURSOR", "find position:" + mCurrentPosition);
+                        break;
+                    }
+                    cursor.moveToNext();
+                }
+                cursor.moveToPosition(position);
                 break;
         }
     }
@@ -88,6 +122,14 @@ public class MusicListFragment extends ListFragment implements LoaderManager.Loa
     @Override
     public void onPause() {
         super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mPlayReceiver != null) {
+            getActivity().unregisterReceiver(mPlayReceiver);
+        }
     }
 
     @Override
@@ -134,6 +176,28 @@ public class MusicListFragment extends ListFragment implements LoaderManager.Loa
             ImageView photoView;
             TextView title;
             TextView artist;
+        }
+    }
+
+    private class PlayReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (ReceiverHelper.INTENT_PLAY_PRE.equals(action)) {
+                if (mCurrentPosition > 0) {
+                    mCurrentPosition--;
+                    Cursor cursor = (Cursor) mAdapter.getItem(mCurrentPosition);
+                    playItem(cursor);
+                }
+            } else if (ReceiverHelper.INTENT_PLAY_NEXT.equals(action)) {
+                if (mCurrentPosition + 1 < mAdapter.getCount() - 1) {
+                    mCurrentPosition++;
+                    Cursor cursor = (Cursor) mAdapter.getItem(mCurrentPosition);
+                    playItem(cursor);
+                }
+            } else if (ReceiverHelper.INTENT_UPDATE_POSITION.equals(action)) {
+                mCurrentPosition = intent.getIntExtra("position", 0);
+            }
         }
     }
 }

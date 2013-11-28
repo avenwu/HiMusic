@@ -23,8 +23,8 @@ import android.widget.TextView;
 import com.avenwu.himusic.R;
 import com.avenwu.himusic.manager.UriProvider;
 import com.avenwu.himusic.task.ThumbnailFetchTask;
-import com.avenwu.himusic.utils.CursorHelper;
-import com.avenwu.himusic.utils.Logger;
+import com.avenwu.himusic.manager.CursorHelper;
+import com.avenwu.himusic.manager.Logger;
 
 /**
  * @author chaobin

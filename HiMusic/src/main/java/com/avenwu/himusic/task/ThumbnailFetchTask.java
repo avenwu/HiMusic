@@ -5,12 +5,11 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.widget.ImageView;
 
-import com.avenwu.himusic.utils.CursorHelper;
-import com.avenwu.himusic.utils.ImageHelper;
-import com.avenwu.himusic.utils.Logger;
+import com.avenwu.himusic.manager.CursorHelper;
+import com.avenwu.himusic.manager.ImageHelper;
+import com.avenwu.himusic.manager.Logger;
 
 public class ThumbnailFetchTask extends AsyncTask<Uri, Void, Bitmap> {
     private ImageView mImageView;

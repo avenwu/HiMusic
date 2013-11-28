@@ -1,6 +1,6 @@
 package com.avenwu.himusic.modle;
 
-import com.avenwu.himusic.utils.FormatterHelper;
+import com.avenwu.himusic.manager.FormatterHelper;
 
 /**
  * @author chaobin

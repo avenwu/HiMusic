@@ -5,8 +5,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
 
-import com.avenwu.himusic.utils.Logger;
-
 /**
  * @author chaobin
  * @date 11/17/13.

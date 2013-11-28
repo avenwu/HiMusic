@@ -1,4 +1,4 @@
-package com.avenwu.himusic.utils;
+package com.avenwu.himusic.manager;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -6,8 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
-
-import com.avenwu.himusic.manager.ThumbnailCache;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,5 +1,6 @@
 package com.avenwu.himusic.fragment;
 
+
 import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -15,9 +16,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.avenwu.himusic.R;
+import com.avenwu.himusic.manager.Logger;
 import com.avenwu.himusic.manager.ReceiverHelper;
+import com.avenwu.himusic.manager.UIHelper;
 import com.avenwu.himusic.service.PlayService;
-import com.avenwu.himusic.utils.UIHelper;
 import com.avenwu.himusic.widget.PlayPauseButton;
 
 /**
@@ -32,6 +34,13 @@ public class PlayFooterFragment extends Fragment {
     private TextView mSongTile;
     private PlayReceiver mPlayReceiver;
     private PlayService mPlayService;
+    private long mCurrentId;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mCurrentId = UIHelper.getCurrentId(getActivity());
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,8 +59,69 @@ public class PlayFooterFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mArtistName.setSelected(true);
         mSongTile.setSelected(true);
-        mPlayReceiver = new PlayReceiver();
+        setListeners();
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ReceiverHelper.INTENT_UPDATE_PLAY_ITEM);
+        filter.addAction(ReceiverHelper.INTENT_PLAY_MUSIC);
+        mPlayReceiver = new PlayReceiver();
+        getActivity().registerReceiver(mPlayReceiver, filter);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        UIHelper.saveCurrentId(getActivity(), mCurrentId);
+        if (mPlayReceiver != null) {
+            getActivity().unregisterReceiver(mPlayReceiver);
+        }
+    }
+
+    public class PlayReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            Logger.d(PlayFooterFragment.class.getSimpleName(), action);
+            if (ReceiverHelper.INTENT_PLAY_MUSIC.equals(action)) {
+                updateArtistInfo(intent);
+                long id = intent.getLongExtra("id", 0);
+                if (id != 0 && mPlayService != null) {
+                    mCurrentId = id;
+                    mPlayService.updateUri(ContentUris.withAppendedId(
+                            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                            id));
+                    mPlayService.stop();
+                    mPlayPause.play();
+                    mPlayPause.setChecked(true);
+                }
+            } else if (ReceiverHelper.INTENT_UPDATE_PLAY_ITEM.equals(action)) {
+                updateArtistInfo(intent);
+            }
+        }
+    }
+
+    private void updateArtistInfo(Intent intent) {
+        mArtistName.setText(intent.getStringExtra("artist"));
+        mSongTile.setText(intent.getStringExtra("title"));
+    }
+
+    public void bindService(PlayService service) {
+        mPlayService = service;
+        if (mCurrentId != -1)
+            mPlayService.queryHistoryItem(mCurrentId);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        UIHelper.saveCurrentId(getActivity(), mCurrentId);
+    }
+
+    private void setListeners() {
         mArtistPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,53 +143,14 @@ public class PlayFooterFragment extends Fragment {
         mNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPlayService.next();
+                ReceiverHelper.notifyNext(getActivity());
             }
         });
         mPre.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPlayService.pre();
+                ReceiverHelper.notifyPre(getActivity());
             }
         });
-    }
-
-    private void reset() {
-        mPlayService.stop();
-        mPlayPause.play();
-        mPlayPause.setChecked(true);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        IntentFilter filter = new IntentFilter(ReceiverHelper.PLAY_RECEIVER_INTENT_FILTER);
-        getActivity().registerReceiver(mPlayReceiver, filter);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        getActivity().unregisterReceiver(mPlayReceiver);
-    }
-
-    /**
-     * Created by Aven on 13-11-24.
-     */
-    public class PlayReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            mArtistName.setText(intent.getStringExtra("artist"));
-            mSongTile.setText(intent.getStringExtra("title"));
-            long id = intent.getLongExtra("id", 0);
-            if (id != 0 && mPlayService != null) {
-                mPlayService.updateUri(ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id));
-                reset();
-            }
-        }
-    }
-
-    public void bindService(PlayService service) {
-        mPlayService = service;
     }
 }

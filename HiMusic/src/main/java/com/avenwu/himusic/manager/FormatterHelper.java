@@ -1,8 +1,6 @@
-package com.avenwu.himusic.utils;
+package com.avenwu.himusic.manager;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * @author chaobin

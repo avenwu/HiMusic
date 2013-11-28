@@ -1,8 +1,7 @@
-package com.avenwu.himusic.utils;
+package com.avenwu.himusic.manager;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.widget.Toast;
 
 /**
@@ -18,4 +17,11 @@ public class UIHelper {
         Toast.makeText(context, content, Toast.LENGTH_SHORT).show();
     }
 
+    public static void saveCurrentId(Activity activity, long id) {
+        activity.getPreferences(0).edit().putLong("current_id", id).commit();
+    }
+
+    public static long getCurrentId(Activity activity) {
+        return activity.getPreferences(0).getLong("current_id", -1);
+    }
 }
